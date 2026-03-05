@@ -10,6 +10,9 @@ handoffs:
   - label: Re-analyze specification consistency
     agent: speckit.analyze
     prompt: Re-analyze specification consistency based on verification findings
+  - label: Run PR review
+    agent: speckit.review.run
+    prompt: Run a comprehensive PR review on the verified changes to check code quality, comments, tests, error handling, type design, and simplification opportunities
 ---
 
 ## User Input
