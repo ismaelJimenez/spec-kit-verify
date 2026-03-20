@@ -3,16 +3,6 @@ description: Perform a non-destructive post-implementation verification gate val
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
   ps: scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
-handoffs:
-  - label: Address findings and re-implement
-    agent: speckit.implement
-    prompt: Address the verification findings and re-run implementation to resolve issues
-  - label: Re-analyze specification consistency
-    agent: speckit.analyze
-    prompt: Re-analyze specification consistency based on verification findings
-  - label: Run PR review
-    agent: speckit.review.run
-    prompt: Run a comprehensive PR review on the verified changes to check code quality, comments, tests, error handling, type design, and simplification opportunities
 ---
 
 ## User Input
