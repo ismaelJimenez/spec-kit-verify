@@ -33,8 +33,7 @@ Run `{SCRIPT}` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_
 - PLAN = FEATURE_DIR/plan.md
 - TASKS = FEATURE_DIR/tasks.md
 
-Abort if SPEC or TASKS is missing (instruct the user to run the missing prerequisite command). PLAN and constitution are optional — checks that depend on them are skipped gracefully.
-Abort if TASKS has no completed tasks.
+Abort with an error message if any required file is missing (instruct the user to run missing prerequisite command).
 For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
 ### 2. Load Artifacts (Progressive Disclosure)
@@ -137,7 +136,6 @@ Use this heuristic to prioritize findings:
 - **HIGH**: Spec intent divergence, fundamental implementation mismatch with acceptance criteria, missing scenario/test coverage
 - **MEDIUM**: Design pattern drift, minor spec intent deviation
 - **LOW**: Structure deviations, naming inconsistencies, minor observations not affecting functionality
-- **INFO**: Positive confirmations (all tasks complete, all requirements covered, no issues found). Use sparingly — only in summary metrics, not as individual finding rows.
 
 ### 7. Produce Compact Verification Report
 
@@ -196,9 +194,5 @@ Ask the user: "Would you like me to suggest concrete remediation edits for the t
 - **Prioritize constitution violations** (these are always CRITICAL)
 - **Use examples over exhaustive rules** (cite specific instances, not generic patterns)
 - **Report zero issues gracefully** (emit success report with coverage statistics)
-- **Every finding must trace back** to a specification artifact (spec.md requirement, user story, scenario, edge case), a structural reference (plan.md, constitution.md), or a task in tasks.md
 
-### Idempotency by Design
-
-The command produces deterministic output — running verification twice on the same state yields the same report. No counters, timestamp-dependent logic, or accumulated state affects findings. The report is fully regenerated on each run.
 
