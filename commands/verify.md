@@ -1,8 +1,8 @@
 ---
 description: Perform a non-destructive post-implementation verification gate validating the implementation against spec.md, plan.md, tasks.md, and constitution.md.
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
-  ps: scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
+  sh: ../../scripts/bash/check-prerequisites.sh --json --paths-only
+  ps: ../../scripts/powershell/check-prerequisites.ps1 -Json -PathsOnly
 ---
 
 ## User Input
@@ -25,15 +25,14 @@ Validate the implementation against its specification artifacts (`spec.md`, `pla
 
 ## Execution Steps
 
-### 1. Initialize Verification Context
+### 1. Resolve Feature & Initialize Context
 
-Run `{SCRIPT}` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
+Run `{SCRIPT}` from repo root.
 
-- SPEC = FEATURE_DIR/spec.md
-- PLAN = FEATURE_DIR/plan.md
-- TASKS = FEATURE_DIR/tasks.md
+1. **Script succeeds** (on a feature branch): Parse JSON for FEATURE_DIR. Set `FEATURE_BRANCH = true`. Proceed to next step.
+2. **Script fails** (not on a feature branch): You MUST prompt for available features (Scan `specs/NNN-*/` to get available features). Use the **AskUserQuestion tool** to let the user select. **Do NOT guess or auto-select a change. Always let the user choose.**
 
-Abort with an error message if any required file is missing (instruct the user to run missing prerequisite command).
+Derive absolute paths: SPEC = FEATURE_DIR/spec.md, PLAN = FEATURE_DIR/plan.md, TASKS = FEATURE_DIR/tasks.md. Abort if any required file is missing (e.g., `tasks.md not found — run /speckit.tasks first`).
 For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
 ### 2. Load Configuration
@@ -143,7 +142,9 @@ Use this heuristic to prioritize findings:
 
 ### 8. Produce Compact Verification Report
 
-Output a Markdown report (no file writes) with the following structure:
+Output a Markdown report (no file writes) with the following structure.
+
+**If `FEATURE_BRANCH = false`**, prepend: `> ⚠️ **Non-Feature-Branch Verification** from \`<BRANCH>\` against \`<FEATURE_DIR>\`. Some checks may be affected by cross-feature interference.`
 
 ## Verification Report
 

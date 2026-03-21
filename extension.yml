@@ -25,6 +25,16 @@ provides:
       description: "Validate implementation matches specification artifacts"
       aliases: ["speckit.verify"]
 
+  scripts:
+    - name: "load-config.sh"
+      file: "scripts/bash/load-config.sh"
+      description: "Load and validate verify extension configuration"
+      executable: true
+    - name: "load-config.ps1"
+      file: "scripts/powershell/load-config.ps1"
+      description: "Load and validate verify extension configuration"
+      executable: true
+
   config:
     - name: "verify-config.yml"
       template: "config-template.yml"
