@@ -36,7 +36,11 @@ Run `{SCRIPT}` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_
 Abort with an error message if any required file is missing (instruct the user to run missing prerequisite command).
 For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
-### 2. Load Artifacts (Progressive Disclosure)
+### 2. Load Configuration
+
+Run the load-config script (`.specify/extensions/verify/scripts/bash/load-config.sh` or `.specify/extensions/verify/scripts/powershell/load-config.ps1`) from the repo root. Parse the `max_findings` value from its output and store it for use in Step 6. If the script fails, abort and relay its error message to the user.
+
+### 3. Load Artifacts (Progressive Disclosure)
 
 Load only the minimal necessary context from each artifact:
 
@@ -67,7 +71,7 @@ Load only the minimal necessary context from each artifact:
 - Load `.specify/memory/constitution.md` for principle validation
 - If missing or placeholder: skip constitution checks, emit Info finding
 
-### 3. Identify Implementation Scope
+### 4. Identify Implementation Scope
 
 Build the set of files to verify from tasks.md.
 
@@ -76,7 +80,7 @@ Build the set of files to verify from tasks.md.
 - Build **REVIEW_FILES** set from completed task file paths
 - Track **INCOMPLETE_TASK_FILES** from incomplete tasks (used by check C)
 
-### 4. Build Semantic Models
+### 5. Build Semantic Models
 
 Create internal representations (do not include raw artifacts in output):
 
@@ -87,9 +91,9 @@ Create internal representations (do not include raw artifacts in output):
 - **Spec intent references**: User stories, acceptance criteria, and scenarios from spec.md
 - **Constitution rule set**: Extract principle names and MUST/SHOULD normative statements
 
-### 5. Verification Checks (Token-Efficient Analysis)
+### 6. Verification Checks (Token-Efficient Analysis)
 
-Focus on high-signal findings. Limit to 50 findings total; aggregate remainder in overflow summary.
+Focus on high-signal findings. **Limit to the configured `max_findings` value** (loaded in Step 2); aggregate remainder in overflow summary.
 
 #### A. Task Completion
 
@@ -128,7 +132,7 @@ Focus on high-signal findings. Limit to 50 findings total; aggregate remainder i
 - New code deviating from existing project conventions (naming, module structure, error handling patterns)
 - Public APIs/exports/endpoints not described in plan.md
 
-### 6. Severity Assignment
+### 7. Severity Assignment
 
 Use this heuristic to prioritize findings:
 
@@ -137,7 +141,7 @@ Use this heuristic to prioritize findings:
 - **MEDIUM**: Design pattern drift, minor spec intent deviation
 - **LOW**: Structure deviations, naming inconsistencies, minor observations not affecting functionality
 
-### 7. Produce Compact Verification Report
+### 8. Produce Compact Verification Report
 
 Output a Markdown report (no file writes) with the following structure:
 
@@ -165,7 +169,7 @@ Output a Markdown report (no file writes) with the following structure:
 - Files Verified
 - Critical Issues Count
 
-### 8. Provide Next Actions
+### 9. Provide Next Actions
 
 At end of report, output a concise Next Actions block:
 
@@ -174,7 +178,7 @@ At end of report, output a concise Next Actions block:
 - If only LOW/MEDIUM: User may proceed, but provide improvement suggestions
 - Provide explicit command suggestions: e.g., "Run `/speckit.implement` to address findings and re-run verification", "Implementation verified — ready for review or merge"
 
-### 9. Offer Remediation
+### 10. Offer Remediation
 
 Ask the user: "Would you like me to suggest concrete remediation edits for the top N issues?" (Do NOT apply them automatically.)
 
@@ -184,7 +188,7 @@ Ask the user: "Would you like me to suggest concrete remediation edits for the t
 
 - **Minimal high-signal tokens**: Focus on actionable findings, not exhaustive documentation
 - **Progressive disclosure**: Load artifacts and source files incrementally; don't dump all content into analysis
-- **Token-efficient output**: Limit findings table to 50 rows; summarize overflow
+- **Token-efficient output**: Limit findings table to the configured `max_findings` value; summarize overflow
 - **Deterministic results**: Rerunning without changes should produce consistent IDs and counts
 
 ### Analysis Guidelines

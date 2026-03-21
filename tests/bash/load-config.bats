@@ -29,9 +29,19 @@ ${1}
 EOF
 }
 
+create_extension_yml() {
+  local value="${1:-50}"
+  mkdir -p .specify/extensions/verify
+  cat > .specify/extensions/verify/extension.yml <<EOF
+defaults:
+  report:
+    max_findings: ${value}
+EOF
+}
+
 # --- Group A: Config file missing ---
 
-@test "exits 1 when config file does not exist" {
+@test "exits 1 when config file and extension.yml do not exist" {
   run bash "$SCRIPT_UNDER_TEST"
   [ "$status" -eq 1 ]
   [[ "$output" == *"Configuration not found"* ]]
@@ -41,6 +51,28 @@ EOF
   run bash "$SCRIPT_UNDER_TEST"
   [ "$status" -eq 1 ]
   [[ "$output" == *"specify extension add verify"* ]]
+}
+
+@test "loads defaults from extension.yml when config missing" {
+  create_extension_yml 50
+  run bash "$SCRIPT_UNDER_TEST"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"using defaults from extension.yml"* ]]
+  [[ "$output" == *"max_findings=50"* ]]
+}
+
+@test "loads custom default from extension.yml when config missing" {
+  create_extension_yml 75
+  run bash "$SCRIPT_UNDER_TEST"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"max_findings=75"* ]]
+}
+
+@test "env var overrides extension.yml default when config missing" {
+  create_extension_yml 50
+  SPECKIT_VERIFY_MAX_FINDINGS=200 run bash "$SCRIPT_UNDER_TEST"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"max_findings=200"* ]]
 }
 
 # --- Group B: Successful load ---
@@ -181,3 +213,5 @@ EOF
   [ "$status" -eq 0 ]
   [[ "$output" == *"max_findings=99999"* ]]
 }
+
+

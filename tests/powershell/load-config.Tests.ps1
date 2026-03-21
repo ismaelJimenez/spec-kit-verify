@@ -28,8 +28,20 @@ report:
         $Content | Set-Content (Join-Path $dir.FullName 'verify-config.yml')
     }
 
+    function script:New-ExtensionYml {
+        param([string]$Value = '50')
+        $dir = New-Item -ItemType Directory -Path '.specify/extensions/verify' -Force
+        @"
+defaults:
+  report:
+    max_findings: $Value
+"@ | Set-Content (Join-Path $dir.FullName 'extension.yml')
+    }
+
     function script:Invoke-LoadConfig {
-        param([hashtable]$EnvOverrides = @{})
+        param(
+            [hashtable]$EnvOverrides = @{}
+        )
 
         $envSetup = foreach ($kv in $EnvOverrides.GetEnumerator()) {
             "`$env:$($kv.Key) = '$($kv.Value)'"
@@ -47,7 +59,7 @@ report:
     # --- Group A: Config file missing ---
 
     Context 'Config file missing' {
-        It 'exits 1 when config file does not exist' {
+        It 'exits 1 when config file and extension.yml do not exist' {
             $r = Invoke-LoadConfig
             $r.ExitCode | Should -Be 1
             $r.Output | Should -Match 'Configuration not found'
@@ -57,6 +69,28 @@ report:
             $r = Invoke-LoadConfig
             $r.ExitCode | Should -Be 1
             $r.Output | Should -Match 'specify extension add verify'
+        }
+
+        It 'loads defaults from extension.yml when config missing' {
+            New-ExtensionYml '50'
+            $r = Invoke-LoadConfig
+            $r.ExitCode | Should -Be 0
+            $r.Output | Should -Match 'using defaults from extension.yml'
+            $r.Output | Should -Match 'max_findings=50'
+        }
+
+        It 'loads custom default from extension.yml when config missing' {
+            New-ExtensionYml '75'
+            $r = Invoke-LoadConfig
+            $r.ExitCode | Should -Be 0
+            $r.Output | Should -Match 'max_findings=75'
+        }
+
+        It 'env var overrides extension.yml default when config missing' {
+            New-ExtensionYml '50'
+            $r = Invoke-LoadConfig -EnvOverrides @{ SPECKIT_VERIFY_MAX_FINDINGS = '200' }
+            $r.ExitCode | Should -Be 0
+            $r.Output | Should -Match 'max_findings=200'
         }
     }
 
@@ -202,4 +236,5 @@ report:
             $r.Output | Should -Match 'max_findings=99999'
         }
     }
+
 }
