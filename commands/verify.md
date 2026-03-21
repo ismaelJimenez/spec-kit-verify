@@ -25,14 +25,20 @@ Validate the implementation against its specification artifacts (`spec.md`, `pla
 
 ## Execution Steps
 
-### 1. Resolve Feature & Initialize Context
+### 1. Initialize Verification Context
 
 Run `{SCRIPT}` from repo root.
 
 1. **Script succeeds** (on a feature branch): Parse JSON for FEATURE_DIR. Set `FEATURE_BRANCH = true`. Proceed to next step.
 2. **Script fails** (not on a feature branch): You MUST prompt for available features (Scan `specs/NNN-*/` to get available features). Use the **AskUserQuestion tool** to let the user select. **Do NOT guess or auto-select a change. Always let the user choose.**
 
-Derive absolute paths: SPEC = FEATURE_DIR/spec.md, PLAN = FEATURE_DIR/plan.md, TASKS = FEATURE_DIR/tasks.md. Abort if any required file is missing (e.g., `tasks.md not found — run /speckit.tasks first`).
+Derive absolute paths: 
+
+- SPEC = FEATURE_DIR/spec.md
+- PLAN = FEATURE_DIR/plan.md
+- TASKS = FEATURE_DIR/tasks.md. 
+
+Abort if any required file is missing (instruct the user to run missing prerequisite command).
 For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
 ### 2. Load Configuration
@@ -45,16 +51,16 @@ Load only the minimal necessary context from each artifact:
 
 **From spec.md:**
 
-- Functional Requirements
-- User Stories and Acceptance Criteria
-- Scenarios
+- User Scenarios & Testing (user stories, acceptance scenarios, priorities)- Overview/Context- Functional Requirements
+- Non-Functional Requirements
+- User Stories
 - Edge Cases (if present)
-
-**From plan.md (optional):**
-
-- Architecture/stack choices
+- Success Criteria**From plan.md:**- Architecture/stack choices
 - Data Model references
-- Project structure (directory layout)
+- Technical constraints
+- Project structure
+- Technical Context (language, dependencies, storage, testing, platform, constraints)
+- Project Structure (documentation layout and source code layout)
 
 **From tasks.md:**
 
@@ -63,12 +69,10 @@ Load only the minimal necessary context from each artifact:
 - Descriptions
 - Phase grouping
 - Referenced file paths
-- Count total tasks and completed tasks
 
-**From constitution (optional):**
+**From constitution:**
 
 - Load `.specify/memory/constitution.md` for principle validation
-- If missing or placeholder: skip constitution checks, emit Info finding
 
 ### 4. Identify Implementation Scope
 
