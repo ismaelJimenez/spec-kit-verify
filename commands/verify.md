@@ -55,7 +55,11 @@ Load only the minimal necessary context from each artifact:
 - Non-Functional Requirements
 - User Stories
 - Edge Cases (if present)
-- Success Criteria**From plan.md:**- Architecture/stack choices
+- Success Criteria
+
+**From plan.md:**
+
+- Architecture/stack choices
 - Data Model references
 - Technical constraints
 - Project structure
