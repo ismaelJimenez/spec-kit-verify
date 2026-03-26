@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "verify"
   name: "Verify Extension"
-  version: "1.0.0"
+  version: "1.0.1"
   description: "Post-implementation quality gate that validates implementation against specification artifacts."
   author: "ismaelJimenez"
   repository: "https://github.com/ismaelJimenez/spec-kit-verify"
