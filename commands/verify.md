@@ -51,20 +51,24 @@ Load only the minimal necessary context from each artifact:
 
 **From spec.md:**
 
-- User Scenarios & Testing (user stories, acceptance scenarios, priorities)- Overview/Context- Functional Requirements
-- Non-Functional Requirements
-- User Stories
-- Edge Cases (if present)
-- Success Criteria
+- User Scenarios & Testing (user stories, acceptance scenarios, priorities)
+- Edge Cases
+- Functional Requirements
+- Success Criteria / Measurable Outcomes (performance, security, availability, observability targets)
+- Assumptions
 
 **From plan.md:**
 
 - Architecture/stack choices
-- Data Model references
 - Technical constraints
-- Project structure
 - Technical Context (language, dependencies, storage, testing, platform, constraints)
 - Project Structure (documentation layout and source code layout)
+
+**From data-model.md (if present):**
+
+- Entity names, fields, and relationships
+- Validation rules
+- State transitions
 
 **From tasks.md:**
 
@@ -95,7 +99,7 @@ Create internal representations (do not include raw artifacts in output):
 - **Implementation mapping**: Map each completed task to its referenced file paths
 - **File inventory**: All REVIEW_FILES with existence verification — flag any task-referenced file that does not exist on disk
 - **Requirements inventory**: Each functional requirement with a stable key — map to tasks and REVIEW_FILES for implementation evidence (evidence = file in REVIEW_FILES containing keyword/ID match, function signatures, or code paths that address the requirement)
-- **Spec intent references**: User stories, acceptance criteria, and scenarios from spec.md
+- **Spec intent references**: User stories, acceptance criteria, scenarios, edge cases, and code-verifiable success criteria from spec.md
 - **Constitution rule set**: Extract principle names and MUST/SHOULD normative statements
 
 ### 6. Verification Checks (Token-Efficient Analysis)
@@ -120,12 +124,14 @@ Focus on high-signal findings. **Limit to the configured `max_findings` value** 
 #### D. Scenario & Test Coverage
 
 - Spec scenarios with no corresponding test or code path
+- Edge cases with no corresponding test, guard clause, or error-handling code path
 - No test files detected at all in REVIEW_FILES
 
 #### E. Spec Intent Alignment
 
 - Implementation diverging from spec intent (minor vs fundamental divergence)
 - Compare acceptance criteria against actual behaviour in REVIEW_FILES
+- Code-verifiable success criteria (performance, security, availability, observability) with no evidence of implementation support — skip business/UX metrics that require post-deployment measurement
 
 #### F. Constitution Alignment
 
