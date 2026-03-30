@@ -98,13 +98,30 @@ jobs:
               print(f"✅ provides.commands has {len(commands)} command(s)")
 
           # --- Command naming convention: speckit.{ext-id}.{command} ---
+          cmd_pattern = f'^speckit\\.{re.escape(ext_id)}\\.[a-z0-9-]+$'
           for cmd in commands:
               name = cmd.get('name', '')
-              pattern = f'^speckit\\.{re.escape(ext_id)}\\.[a-z0-9-]+$'
-              if not re.match(pattern, name):
+              if not re.match(cmd_pattern, name):
                   errors.append(f"Command name '{name}' must match pattern speckit.{ext_id}.<command>")
               else:
                   print(f"✅ Command '{name}' follows naming convention")
+
+          # --- Alias naming convention: speckit.{ext-id}.{alias} ---
+          for cmd in commands:
+              aliases = cmd.get('aliases', [])
+              if aliases is None:
+                  aliases = []
+              if not isinstance(aliases, list):
+                  errors.append(f"Aliases for command '{cmd.get('name', '')}' must be a list")
+                  continue
+              for alias in aliases:
+                  if not isinstance(alias, str):
+                      errors.append(f"Alias in command '{cmd.get('name', '')}' must be a string")
+                      continue
+                  if not re.match(cmd_pattern, alias):
+                      errors.append(f"Alias '{alias}' must match pattern speckit.{ext_id}.<command>")
+                  else:
+                      print(f"✅ Alias '{alias}' follows naming convention")
 
           # --- Command file existence ---
           for cmd in commands:
