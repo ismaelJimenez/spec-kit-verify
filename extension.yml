@@ -23,7 +23,6 @@ provides:
     - name: "speckit.verify.run"
       file: "commands/verify.md"
       description: "Validate implementation matches specification artifacts"
-      aliases: ["speckit.verify"]
 
   scripts:
     - name: "load-config.sh"

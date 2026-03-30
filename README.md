@@ -59,7 +59,7 @@ Validate implemented code against specification artifacts.
 
 ```text
 # In Claude Code
-> /speckit.verify
+> /speckit.verify.run
 ```
 
 **Prerequisites:**
@@ -108,7 +108,7 @@ This extension does not currently support environment variable overrides. All co
 > /speckit.implement
 
 # Step 4: Verify implementation
-> /speckit.verify
+> /speckit.verify.run
 ```
 
 The verify command produces a report like:
@@ -149,7 +149,7 @@ The verify command analyzes implemented code against specification artifacts:
 ## Workflow Integration
 
 ```
-/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement → /speckit.verify
+/speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement → /speckit.verify.run
 ```
 
 ## Operating Principles
