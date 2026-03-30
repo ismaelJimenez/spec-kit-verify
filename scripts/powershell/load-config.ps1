@@ -1,6 +1,6 @@
 # load-config.ps1 — Load and validate the verify extension configuration.
 #
-# Reads report.max_findings from the YAML config file using yq,
+# Reads report.max_findings from the YAML config file,
 # normalises YAML null sentinels, applies an optional environment
 # variable override (SPECKIT_VERIFY_MAX_FINDINGS), and validates
 # that a value is present before exporting it.
@@ -10,8 +10,6 @@
 # Exit codes:
 #   0 — configuration loaded successfully
 #   1 — config file missing, required value not set, or invalid value
-#
-# Dependencies: yq (https://github.com/mikefarah/yq)
 
 $configFile = ".specify/extensions/verify/verify-config.yml"
 $extensionFile = ".specify/extensions/verify/extension.yml"
@@ -29,13 +27,29 @@ if (-not (Test-Path $configFile)) {
 
 # Read configuration values
 
-if ($usingDefaults) {
-    $maxFindings = yq eval '.defaults.report.max_findings' $extensionFile
-} else {
-    $maxFindings = yq eval '.report.max_findings' $configFile
+# Extract a YAML value for a key from a file using only built-in tools.
+function Get-YamlValue {
+    param([string]$Key, [string]$File)
+    $lines = Get-Content $File -ErrorAction SilentlyContinue
+    if (-not $lines) { return '' }
+    $match = $lines | Select-String -Pattern "^\s*${Key}:" | Select-Object -Last 1
+    if (-not $match) { return '' }
+    $raw = $match.Line -replace '^[^:]*:', ''
+    $raw = $raw.Trim()
+    # Strip surrounding double quotes
+    if ($raw.Length -ge 2 -and $raw.StartsWith('"') -and $raw.EndsWith('"')) {
+        $raw = $raw.Substring(1, $raw.Length - 2)
+    }
+    return $raw
 }
 
-# Treat yq sentinel values as empty
+if ($usingDefaults) {
+    $maxFindings = Get-YamlValue -Key 'max_findings' -File $extensionFile
+} else {
+    $maxFindings = Get-YamlValue -Key 'max_findings' -File $configFile
+}
+
+# Treat YAML null sentinels as empty
 if ($maxFindings -eq 'null' -or $maxFindings -eq '~') {
     $maxFindings = ''
 }

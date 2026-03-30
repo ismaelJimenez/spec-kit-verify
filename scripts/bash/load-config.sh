@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # load-config.sh — Load and validate the verify extension configuration.
 #
-# Reads report.max_findings from the YAML config file using yq,
+# Reads report.max_findings from the YAML config file,
 # normalises YAML null sentinels, applies an optional environment
 # variable override (SPECKIT_VERIFY_MAX_FINDINGS), and validates
 # that a value is present before exporting it.
@@ -11,8 +11,6 @@
 # Exit codes:
 #   0 — configuration loaded successfully
 #   1 — config file missing, required value not set, or invalid value
-#
-# Dependencies: yq (https://github.com/mikefarah/yq)
 
 config_file=".specify/extensions/verify/verify-config.yml"
 extension_file=".specify/extensions/verify/extension.yml"
@@ -30,13 +28,27 @@ fi
 
 # Read configuration values
 
+# Extract a YAML value for a key from a file using only built-in tools.
+# Finds the last occurrence of the key (handles nested sections) and
+# strips surrounding whitespace and double quotes.
+yaml_value() {
+  local key="$1" file="$2"
+  local raw
+  raw=$(grep -E "^[[:space:]]*${key}:" "$file" | tail -n 1 | sed "s/^[^:]*://")
+  # Trim leading/trailing whitespace
+  raw=$(echo "$raw" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+  # Strip surrounding double quotes
+  raw=$(echo "$raw" | sed 's/^"\(.*\)"$/\1/')
+  echo "$raw"
+}
+
 if [ "$using_defaults" = true ]; then
-  max_findings=$(yq eval '.defaults.report.max_findings' "$extension_file")
+  max_findings=$(yaml_value max_findings "$extension_file")
 else
-  max_findings=$(yq eval '.report.max_findings' "$config_file")
+  max_findings=$(yaml_value max_findings "$config_file")
 fi
 
-# Treat yq sentinel values as empty
+# Treat YAML null sentinels as empty
 if [ "$max_findings" = "null" ] || [ "$max_findings" = "~" ]; then
   max_findings=""
 fi
