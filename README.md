@@ -19,7 +19,7 @@ specify extension add verify
 Or install from repository directly:
 
 ```bash
-specify extension add verify --from https://github.com/ismaelJimenez/spec-kit-verify/archive/refs/tags/v1.0.1.zip
+specify extension add verify --from https://github.com/ismaelJimenez/spec-kit-verify/archive/refs/tags/v1.0.3.zip
 ```
 
 For local development:
@@ -199,4 +199,4 @@ MIT License - see [LICENSE](LICENSE) file
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
 
-Extension Version: 1.0.1 · Spec Kit: >=0.1.0
+Extension Version: 1.0.3 · Spec Kit: >=0.1.0
